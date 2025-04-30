@@ -12,8 +12,8 @@ import { useToast } from "@/hooks/use-toast";
 
 export default function Home() {
   const {
-    monthlySalary,
-    setMonthlySalary,
+    totalMoney, // Renamed from monthlySalary
+    setTotalMoney, // Renamed from setMonthlySalary
     expenses, // This is now filteredExpenses from the hook
     addExpense,
     deleteExpense,
@@ -87,10 +87,10 @@ export default function Home() {
 
       {/* Summary Section */}
       <SummaryDisplay
-        monthlySalary={monthlySalary}
+        totalMoney={totalMoney} // Renamed from monthlySalary
         totalExpenses={totalExpenses}
         remainingBalance={remainingBalance}
-        onSalaryUpdate={setMonthlySalary}
+        onMoneyUpdate={setTotalMoney} // Renamed from onSalaryUpdate
       />
 
       {/* Main Content Grid - Added flex-grow */}
@@ -117,17 +117,19 @@ export default function Home() {
                 />
             </div>
              {/* Export Button */}
-            <div className="flex justify-end">
+            <div className="flex justify-end mt-4"> {/* Added margin top */}
                 <ExportButton onExport={handleExport} disabled={expenses.length === 0} />
             </div>
         </div>
       </div>
 
-       {/* Filter Controls below the main grid */}
-      <FilterControls filter={filter} onFilterChange={setFilter} />
+       {/* Filter Controls at the bottom */}
+      <div className="mt-6"> {/* Added margin top */}
+         <FilterControls filter={filter} onFilterChange={setFilter} />
+      </div>
 
 
-      <footer className="mt-12 text-center text-sm text-muted-foreground">
+      <footer className="mt-auto pt-8 text-center text-sm text-muted-foreground"> {/* Used mt-auto and pt-8 */}
         Built by Aswindev S B with help of AI
       </footer>
     </div>

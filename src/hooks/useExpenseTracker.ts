@@ -3,7 +3,7 @@ import type { Expense, ExpenseCategory, FilterCriteria } from '@/types';
 import { loadData, saveData } from '@/lib/storage';
 import { format, parseISO, startOfMonth, endOfMonth } from 'date-fns';
 
-const SALARY_KEY = 'monthlySalary';
+const TOTAL_MONEY_KEY = 'totalMoney'; // Renamed from SALARY_KEY
 const EXPENSES_KEY = 'expenses';
 
 export function useExpenseTracker() {
@@ -11,7 +11,7 @@ export function useExpenseTracker() {
   const [isClient, setIsClient] = useState(false);
 
   // Initialize state with server-safe default values
-  const [monthlySalary, setMonthlySalaryState] = useState<number>(0);
+  const [totalMoney, setTotalMoneyState] = useState<number>(0); // Renamed from monthlySalary
   const [expenses, setExpensesState] = useState<Expense[]>([]);
   const [filter, setFilter] = useState<FilterCriteria>({});
   const [editingExpenseId, setEditingExpenseId] = useState<string | null>(null);
@@ -20,18 +20,18 @@ export function useExpenseTracker() {
   // Load data from localStorage only after component has mounted on the client
   useEffect(() => {
     setIsClient(true); // Mark as client-side mounted
-    setMonthlySalaryState(loadData(SALARY_KEY, 0));
+    setTotalMoneyState(loadData(TOTAL_MONEY_KEY, 0)); // Use TOTAL_MONEY_KEY
     const loadedExpenses = loadData(EXPENSES_KEY, []);
     // Ensure expenses are sorted when loaded initially
     setExpensesState(loadedExpenses.sort((a: Expense, b: Expense) => parseISO(b.date).getTime() - parseISO(a.date).getTime()));
   }, []); // Empty dependency array ensures this runs only once on mount
 
-  // Persist salary to localStorage when it changes (only on client)
+  // Persist total money to localStorage when it changes (only on client)
   useEffect(() => {
     if (isClient) {
-      saveData(SALARY_KEY, monthlySalary);
+      saveData(TOTAL_MONEY_KEY, totalMoney); // Use TOTAL_MONEY_KEY
     }
-  }, [monthlySalary, isClient]);
+  }, [totalMoney, isClient]); // Dependency updated
 
   // Persist expenses to localStorage when they change (only on client)
   useEffect(() => {
@@ -40,8 +40,8 @@ export function useExpenseTracker() {
     }
   }, [expenses, isClient]);
 
-  const setMonthlySalary = useCallback((newSalary: number) => {
-    setMonthlySalaryState(isNaN(newSalary) || newSalary < 0 ? 0 : newSalary);
+  const setTotalMoney = useCallback((newMoney: number) => { // Renamed from setMonthlySalary
+    setTotalMoneyState(isNaN(newMoney) || newMoney < 0 ? 0 : newMoney);
   }, []);
 
   const addExpense = useCallback((expense: Omit<Expense, 'id'>) => {
@@ -110,8 +110,8 @@ export function useExpenseTracker() {
   const remainingBalance = useMemo(() => {
      // Return server-safe value initially
     if (!isClient) return 0;
-    return monthlySalary - totalExpenses;
-  }, [monthlySalary, totalExpenses, isClient]);
+    return totalMoney - totalExpenses; // Use totalMoney
+  }, [totalMoney, totalExpenses, isClient]); // Dependency updated
 
 
   const exportExpenses = useCallback(() => {
@@ -163,8 +163,8 @@ export function useExpenseTracker() {
 
   // Return values consistent with initial server render until client mounts
   return {
-    monthlySalary: isClient ? monthlySalary : 0,
-    setMonthlySalary,
+    totalMoney: isClient ? totalMoney : 0, // Renamed from monthlySalary
+    setTotalMoney, // Renamed from setMonthlySalary
     expenses: filteredExpenses, // Already handles isClient
     allExpenses: isClient ? expenses : [], // Return full list only on client
     addExpense,
