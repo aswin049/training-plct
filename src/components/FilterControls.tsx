@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { format } from 'date-fns';
 import { Calendar as CalendarIcon, Search, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -26,15 +26,32 @@ interface FilterControlsProps {
   onFilterChange: (filter: FilterCriteria) => void;
 }
 
+const ALL_CATEGORIES_VALUE = "__ALL__"; // Use a non-empty value
+
 export function FilterControls({ filter, onFilterChange }: FilterControlsProps) {
+  // Internal state uses '' for all, matching FilterCriteria type
   const [category, setCategory] = useState(filter.category || '');
   const [startDate, setStartDate] = useState<Date | undefined>(filter.startDate ? new Date(filter.startDate) : undefined);
   const [endDate, setEndDate] = useState<Date | undefined>(filter.endDate ? new Date(filter.endDate) : undefined);
   const [searchTerm, setSearchTerm] = useState(filter.searchTerm || '');
 
+  // Update internal state if external filter prop changes
+  useEffect(() => {
+    setCategory(filter.category || '');
+    setStartDate(filter.startDate ? new Date(filter.startDate) : undefined);
+    setEndDate(filter.endDate ? new Date(filter.endDate) : undefined);
+    setSearchTerm(filter.searchTerm || '');
+  }, [filter]);
+
+
+  const handleCategoryChange = (value: string) => {
+    // Convert __ALL__ back to '' for internal state and filter criteria
+    setCategory(value === ALL_CATEGORIES_VALUE ? '' : value as ExpenseCategory);
+  };
+
   const handleApplyFilters = () => {
     onFilterChange({
-      category: category as ExpenseCategory | '',
+      category: category as ExpenseCategory | '', // Already '' for all
       startDate: startDate ? format(startDate, 'yyyy-MM-dd') : undefined,
       endDate: endDate ? format(endDate, 'yyyy-MM-dd') : undefined,
       searchTerm: searchTerm || undefined,
@@ -49,6 +66,9 @@ export function FilterControls({ filter, onFilterChange }: FilterControlsProps) 
     onFilterChange({}); // Clear filters in parent
   };
 
+  // Select component value needs to handle mapping '' to __ALL__
+  const selectValue = category === '' ? ALL_CATEGORIES_VALUE : category;
+
   return (
     <Card className="mb-6 shadow-md">
        <CardHeader>
@@ -59,12 +79,13 @@ export function FilterControls({ filter, onFilterChange }: FilterControlsProps) 
                 {/* Category Filter */}
                 <div className="space-y-2">
                     <label htmlFor="category-filter" className="text-sm font-medium">Category</label>
-                    <Select value={category} onValueChange={setCategory}>
+                    <Select value={selectValue} onValueChange={handleCategoryChange}>
                         <SelectTrigger id="category-filter">
                             <SelectValue placeholder="All Categories" />
                         </SelectTrigger>
                         <SelectContent>
-                            <SelectItem value="">All Categories</SelectItem>
+                            {/* Use the non-empty value for the "All" option */}
+                            <SelectItem value={ALL_CATEGORIES_VALUE}>All Categories</SelectItem>
                             {ExpenseCategories.map((cat) => (
                             <SelectItem key={cat} value={cat}>
                                 {cat}
