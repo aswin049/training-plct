@@ -2,7 +2,7 @@ import React from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { DollarSign, TrendingDown, Wallet } from 'lucide-react';
+import { IndianRupee, TrendingDown, Wallet } from 'lucide-react'; // Changed DollarSign to IndianRupee
 
 interface SummaryDisplayProps {
   monthlySalary: number;
@@ -49,7 +49,8 @@ export function SummaryDisplay({
   };
 
   const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(amount);
+    // Change currency to INR
+    return new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' }).format(amount);
   };
 
   return (
@@ -63,7 +64,7 @@ export function SummaryDisplay({
         <Card className="bg-secondary/50">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Monthly Salary</CardTitle>
-            <DollarSign className="h-4 w-4 text-muted-foreground" />
+            <IndianRupee className="h-4 w-4 text-muted-foreground" /> {/* Updated Icon */}
           </CardHeader>
           <CardContent>
             {isEditingSalary ? (

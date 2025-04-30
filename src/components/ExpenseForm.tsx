@@ -112,9 +112,9 @@ export function ExpenseForm({ onSubmit, onUpdate, onCancelEdit, initialData }: E
                 name="amount"
                 render={({ field }) => (
                     <FormItem>
-                    <FormLabel>Amount</FormLabel>
+                    <FormLabel>Amount (₹)</FormLabel>
                     <FormControl>
-                        <Input type="number" step="0.01" placeholder="0.00" {...field} />
+                        <Input type="number" step="0.01" placeholder="₹0.00" {...field} />
                     </FormControl>
                     <FormMessage />
                     </FormItem>
@@ -168,22 +168,17 @@ export function ExpenseForm({ onSubmit, onUpdate, onCancelEdit, initialData }: E
                       <FormLabel>Date of Expense</FormLabel>
                       <Popover>
                         <PopoverTrigger asChild>
-                          <FormControl>
-                            <Button
-                              variant={"outline"}
-                              className={cn(
-                                "w-[240px] pl-3 text-left font-normal",
-                                !field.value && "text-muted-foreground"
-                              )}
-                            >
-                              {field.value ? (
-                                format(field.value, "PPP")
-                              ) : (
-                                <span>Pick a date</span>
-                              )}
-                              <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                            </Button>
-                          </FormControl>
+                          {/* Removed FormControl wrapper here */}
+                          <Button
+                            variant={"outline"}
+                            className={cn(
+                              "w-[240px] justify-start text-left font-normal", // Use justify-start
+                              !field.value && "text-muted-foreground"
+                            )}
+                          >
+                            <CalendarIcon className="mr-2 h-4 w-4 opacity-50" /> {/* Icon first */}
+                            {field.value ? format(field.value, "PPP") : <span>Pick a date</span>}
+                          </Button>
                         </PopoverTrigger>
                         <PopoverContent className="w-auto p-0" align="start">
                           <Calendar

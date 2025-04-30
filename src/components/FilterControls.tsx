@@ -109,7 +109,7 @@ export function FilterControls({ filter, onFilterChange }: FilterControlsProps) 
                                 )}
                             >
                                 <CalendarIcon className="mr-2 h-4 w-4" />
-                                {startDate ? format(startDate, "PPP") : <span>Pick a start date</span>}
+                                {startDate ? format(startDate, "PPP") : "Pick a start date"}
                             </Button>
                         </PopoverTrigger>
                         <PopoverContent className="w-auto p-0">
@@ -140,7 +140,7 @@ export function FilterControls({ filter, onFilterChange }: FilterControlsProps) 
                                 )}
                             >
                                 <CalendarIcon className="mr-2 h-4 w-4" />
-                                {endDate ? format(endDate, "PPP") : <span>Pick an end date</span>}
+                                {endDate ? format(endDate, "PPP") : "Pick an end date"}
                             </Button>
                         </PopoverTrigger>
                         <PopoverContent className="w-auto p-0">

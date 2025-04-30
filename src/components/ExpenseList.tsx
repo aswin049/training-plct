@@ -24,7 +24,8 @@ interface ExpenseListProps {
 export function ExpenseList({ expenses, onDelete, onEdit }: ExpenseListProps) {
 
   const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(amount);
+    // Change currency to INR
+    return new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' }).format(amount);
   };
 
   return (

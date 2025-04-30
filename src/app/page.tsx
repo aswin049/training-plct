@@ -31,11 +31,15 @@ export default function Home() {
 
    const { toast } = useToast();
 
+   const formatCurrency = (amount: number) => {
+    return new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' }).format(amount);
+   };
+
    const handleAddExpense = (data: Omit<import('@/types').Expense, 'id'>) => {
         addExpense(data);
         toast({
             title: "Expense Added",
-            description: `Added ${data.category} expense of $${data.amount.toFixed(2)}.`,
+            description: `Added ${data.category} expense of ${formatCurrency(data.amount)}.`, // Updated currency format
         });
    };
 

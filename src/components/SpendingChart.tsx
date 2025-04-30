@@ -40,6 +40,12 @@ export function SpendingChart({ data }: SpendingChartProps) {
     return data.reduce((acc, curr) => acc + curr.amount, 0)
   }, [data])
 
+  const formatCurrency = (amount: number) => {
+    // Change currency to INR
+    return new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' }).format(amount);
+  };
+
+
   if (data.length === 0) {
     return (
        <Card className="flex flex-col shadow-md">
@@ -52,7 +58,7 @@ export function SpendingChart({ data }: SpendingChartProps) {
             </CardContent>
             <CardFooter className="flex-col gap-2 text-sm">
                  <div className="flex items-center gap-2 font-medium leading-none">
-                    Total Spending: $0.00
+                    Total Spending: {formatCurrency(0)} {/* Updated currency format */}
                 </div>
             </CardFooter>
         </Card>
@@ -73,7 +79,7 @@ export function SpendingChart({ data }: SpendingChartProps) {
           <PieChart>
              <ChartTooltip
               cursor={false}
-              content={<ChartTooltipContent hideLabel nameKey="category" />} // Ensure nameKey matches data key
+              content={<ChartTooltipContent hideLabel nameKey="category" formatter={(value) => formatCurrency(value as number)} />} // Ensure nameKey matches data key and format tooltip value
             />
             <Pie
               data={data}
@@ -88,7 +94,7 @@ export function SpendingChart({ data }: SpendingChartProps) {
       </CardContent>
       <CardFooter className="flex-col gap-2 text-sm">
         <div className="flex items-center gap-2 font-medium leading-none">
-          Total Spending: ${totalAmount.toFixed(2)}
+          Total Spending: {formatCurrency(totalAmount)} {/* Updated currency format */}
            <TrendingUp className="h-4 w-4" />
         </div>
          <div className="leading-none text-muted-foreground">
