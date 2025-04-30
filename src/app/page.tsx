@@ -39,7 +39,7 @@ export default function Home() {
         addExpense(data);
         toast({
             title: "Expense Added",
-            description: `Added ${data.category} expense of ${formatCurrency(data.amount)}.`, // Updated currency format
+            description: `Added ${data.category} expense of ${formatCurrency(data.amount)}.`,
         });
    };
 
@@ -107,24 +107,25 @@ export default function Home() {
 
         {/* Right Column: List, Export, and Filter */}
         <div className="lg:col-span-2 space-y-6">
-            {/* Moved ExpenseList above ExportButton */}
+            {/* Expense History */}
             <ExpenseList
                 expenses={expenses}
                 onDelete={handleDeleteExpense}
                 onEdit={startEditing} // Pass startEditing function
             />
-             {/* Moved ExportButton below ExpenseList */}
+            {/* Export Button */}
             <div className="flex justify-end">
                 <ExportButton onExport={handleExport} disabled={expenses.length === 0} />
             </div>
-             {/* Filter Controls at the bottom */}
-            <FilterControls filter={filter} onFilterChange={setFilter} />
         </div>
       </div>
+       {/* Filter Controls below the main grid */}
+      <FilterControls filter={filter} onFilterChange={setFilter} />
 
-      <footer className="mt-12 text-center text-sm text-muted-foreground">
+
+      {/* <footer className="mt-12 text-center text-sm text-muted-foreground">
         Built with Next.js and shadcn/ui.
-      </footer>
+      </footer> */}
     </div>
   );
 }
