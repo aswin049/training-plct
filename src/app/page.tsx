@@ -82,7 +82,7 @@ export default function Home() {
   return (
     <div className="container mx-auto p-4 md:p-8 space-y-6">
       <header className="text-center mb-8">
-        <h1 className="text-3xl font-bold tracking-tight text-primary">Expense Tracker Lite</h1>
+        <h1 className="text-3xl font-bold tracking-tight text-primary">DEV Financial Tracker</h1>
         <p className="text-muted-foreground">Simple and effective expense tracking.</p>
       </header>
 

@@ -11,8 +11,8 @@ const roboto = Roboto({ // Use Roboto
 });
 
 export const metadata: Metadata = {
-  title: 'Expense Tracker Lite', // Updated title
-  description: 'Track your expenses easily.', // Updated description
+  title: 'DEV Financial Tracker', // Updated title
+  description: 'Track your expenses easily.',
 };
 
 export default function RootLayout({
