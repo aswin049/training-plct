@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -17,15 +17,22 @@ export function SummaryDisplay({
   remainingBalance,
   onSalaryUpdate,
 }: SummaryDisplayProps) {
-  const [salaryInput, setSalaryInput] = React.useState<string>(monthlySalary.toString());
-  const [isEditingSalary, setIsEditingSalary] = React.useState(false);
+  const [salaryInput, setSalaryInput] = useState<string>(monthlySalary.toString());
+  const [isEditingSalary, setIsEditingSalary] = useState(false);
+  const [hasMounted, setHasMounted] = useState(false);
 
-   React.useEffect(() => {
-    // Update local input state if the prop changes (e.g., initial load)
-    if (!isEditingSalary) {
-      setSalaryInput(monthlySalary.toString());
-    }
-  }, [monthlySalary, isEditingSalary]);
+   // Track mount status
+   useEffect(() => {
+    setHasMounted(true);
+   }, []);
+
+
+   // Sync salaryInput with prop after mount and when not editing
+   useEffect(() => {
+     if (hasMounted && !isEditingSalary) {
+        setSalaryInput(monthlySalary.toString());
+     }
+   }, [monthlySalary, isEditingSalary, hasMounted]);
 
 
   const handleSalaryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -52,6 +59,12 @@ export function SummaryDisplay({
     // Change currency to INR
     return new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' }).format(amount);
   };
+
+   // Display 0 or default during SSR/hydration phase, actual value after mount
+   const displaySalary = hasMounted ? monthlySalary : 0;
+   const displayTotalExpenses = hasMounted ? totalExpenses : 0;
+   const displayRemainingBalance = hasMounted ? remainingBalance : 0;
+
 
   return (
     <Card className="mb-6 shadow-md">
@@ -82,8 +95,8 @@ export function SummaryDisplay({
               </div>
             ) : (
               <div className="flex items-center justify-between">
-                 <div className="text-2xl font-bold">{formatCurrency(monthlySalary)}</div>
-                 <Button variant="ghost" size="sm" onClick={() => setIsEditingSalary(true)}>
+                 <div className="text-2xl font-bold">{formatCurrency(displaySalary)}</div>
+                 <Button variant="ghost" size="sm" onClick={() => setIsEditingSalary(true)} disabled={!hasMounted}>
                     Edit
                  </Button>
               </div>
@@ -99,7 +112,7 @@ export function SummaryDisplay({
             <TrendingDown className="h-4 w-4 text-destructive" />
           </CardHeader>
           <CardContent>
-             <div className="text-2xl font-bold text-destructive">{formatCurrency(totalExpenses)}</div>
+             <div className="text-2xl font-bold text-destructive">{formatCurrency(displayTotalExpenses)}</div>
              <p className="text-xs text-muted-foreground">
                 Amount spent this period
              </p>
@@ -113,8 +126,8 @@ export function SummaryDisplay({
              <Wallet className="h-4 w-4 text-primary" />
           </CardHeader>
           <CardContent>
-             <div className={`text-2xl font-bold ${remainingBalance < 0 ? 'text-destructive' : 'text-primary'}`}>
-                {formatCurrency(remainingBalance)}
+             <div className={`text-2xl font-bold ${displayRemainingBalance < 0 ? 'text-destructive' : 'text-primary'}`}>
+                {formatCurrency(displayRemainingBalance)}
             </div>
              <p className="text-xs text-muted-foreground">
                 Money left from salary

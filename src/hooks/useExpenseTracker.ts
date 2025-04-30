@@ -7,20 +7,38 @@ const SALARY_KEY = 'monthlySalary';
 const EXPENSES_KEY = 'expenses';
 
 export function useExpenseTracker() {
-  const [monthlySalary, setMonthlySalaryState] = useState<number>(() => loadData(SALARY_KEY, 0));
-  const [expenses, setExpensesState] = useState<Expense[]>(() => loadData(EXPENSES_KEY, []));
+  // State to track if the component has mounted (client-side)
+  const [isClient, setIsClient] = useState(false);
+
+  // Initialize state with server-safe default values
+  const [monthlySalary, setMonthlySalaryState] = useState<number>(0);
+  const [expenses, setExpensesState] = useState<Expense[]>([]);
   const [filter, setFilter] = useState<FilterCriteria>({});
   const [editingExpenseId, setEditingExpenseId] = useState<string | null>(null);
 
-  // Persist salary to localStorage
-  useEffect(() => {
-    saveData(SALARY_KEY, monthlySalary);
-  }, [monthlySalary]);
 
-  // Persist expenses to localStorage
+  // Load data from localStorage only after component has mounted on the client
   useEffect(() => {
-    saveData(EXPENSES_KEY, expenses);
-  }, [expenses]);
+    setIsClient(true); // Mark as client-side mounted
+    setMonthlySalaryState(loadData(SALARY_KEY, 0));
+    const loadedExpenses = loadData(EXPENSES_KEY, []);
+    // Ensure expenses are sorted when loaded initially
+    setExpensesState(loadedExpenses.sort((a: Expense, b: Expense) => parseISO(b.date).getTime() - parseISO(a.date).getTime()));
+  }, []); // Empty dependency array ensures this runs only once on mount
+
+  // Persist salary to localStorage when it changes (only on client)
+  useEffect(() => {
+    if (isClient) {
+      saveData(SALARY_KEY, monthlySalary);
+    }
+  }, [monthlySalary, isClient]);
+
+  // Persist expenses to localStorage when they change (only on client)
+  useEffect(() => {
+    if (isClient) {
+      saveData(EXPENSES_KEY, expenses);
+    }
+  }, [expenses, isClient]);
 
   const setMonthlySalary = useCallback((newSalary: number) => {
     setMonthlySalaryState(isNaN(newSalary) || newSalary < 0 ? 0 : newSalary);
@@ -58,19 +76,15 @@ export function useExpenseTracker() {
   }, []);
 
   const editingExpense = useMemo(() => {
+    // Ensure this runs only on client after mount
+    if (!isClient) return null;
     return expenses.find(exp => exp.id === editingExpenseId) || null;
-  }, [expenses, editingExpenseId]);
+  }, [expenses, editingExpenseId, isClient]);
 
-
-  const totalExpenses = useMemo(() => {
-    return expenses.reduce((sum, expense) => sum + expense.amount, 0);
-  }, [expenses]);
-
-  const remainingBalance = useMemo(() => {
-    return monthlySalary - totalExpenses;
-  }, [monthlySalary, totalExpenses]);
 
   const filteredExpenses = useMemo(() => {
+    // Return empty array on server or before client mount
+    if (!isClient) return [];
     return expenses.filter((expense) => {
       const expenseDate = parseISO(expense.date);
       const matchCategory = !filter.category || expense.category === filter.category;
@@ -84,12 +98,27 @@ export function useExpenseTracker() {
 
       return matchCategory && matchStartDate && matchEndDate && matchSearchTerm;
     });
-  }, [expenses, filter]);
+  }, [expenses, filter, isClient]);
+
+    const totalExpenses = useMemo(() => {
+    // Return 0 on server or before client mount
+    if (!isClient) return 0;
+    // Calculate based on the *original* unfiltered expenses array
+    return expenses.reduce((sum, expense) => sum + expense.amount, 0);
+  }, [expenses, isClient]); // Depends on the full expenses list
+
+  const remainingBalance = useMemo(() => {
+     // Return server-safe value initially
+    if (!isClient) return 0;
+    return monthlySalary - totalExpenses;
+  }, [monthlySalary, totalExpenses, isClient]);
+
 
   const exportExpenses = useCallback(() => {
-    if (typeof window === 'undefined') return;
+    if (typeof window === 'undefined' || !isClient) return; // Ensure client-side only
 
     const headers = ["Date", "Category", "Amount", "Description"];
+    // Export based on currently filtered expenses
     const csvContent = [
       headers.join(","),
       ...filteredExpenses.map(e =>
@@ -114,38 +143,42 @@ export function useExpenseTracker() {
       document.body.removeChild(link);
       URL.revokeObjectURL(url);
     }
-  }, [filteredExpenses]);
+  }, [filteredExpenses, isClient]); // Depends on filtered expenses and isClient
 
 
   // Calculate data for the spending chart
   const spendingByCategory = useMemo(() => {
+    // Return empty array on server or before client mount
+    if (!isClient) return [];
     const categoryMap: { [key in ExpenseCategory]?: number } = {};
+    // Calculate based on filtered expenses
     filteredExpenses.forEach(expense => {
       categoryMap[expense.category] = (categoryMap[expense.category] || 0) + expense.amount;
     });
     return Object.entries(categoryMap)
       .map(([category, amount]) => ({ category: category as ExpenseCategory, amount }))
       .sort((a, b) => b.amount - a.amount); // Sort for chart display
-  }, [filteredExpenses]);
+  }, [filteredExpenses, isClient]); // Depends on filtered expenses
 
 
+  // Return values consistent with initial server render until client mounts
   return {
-    monthlySalary,
+    monthlySalary: isClient ? monthlySalary : 0,
     setMonthlySalary,
-    expenses: filteredExpenses, // Return filtered expenses for display
-    allExpenses: expenses, // Provide access to all expenses if needed elsewhere
+    expenses: filteredExpenses, // Already handles isClient
+    allExpenses: isClient ? expenses : [], // Return full list only on client
     addExpense,
     deleteExpense,
     updateExpense,
     startEditing,
     cancelEditing,
-    editingExpense,
+    editingExpense, // Already handles isClient
     editingExpenseId,
-    totalExpenses,
-    remainingBalance,
+    totalExpenses, // Already handles isClient
+    remainingBalance, // Already handles isClient
     filter,
     setFilter,
     exportExpenses,
-    spendingByCategory,
+    spendingByCategory, // Already handles isClient
   };
 }
