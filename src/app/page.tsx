@@ -107,14 +107,17 @@ export default function Home() {
 
         {/* Right Column: List, Export, and Filter */}
         <div className="lg:col-span-2 space-y-6">
-            <div className="flex justify-end">
-                <ExportButton onExport={handleExport} disabled={expenses.length === 0} />
-            </div>
+            {/* Moved ExpenseList above ExportButton */}
             <ExpenseList
                 expenses={expenses}
                 onDelete={handleDeleteExpense}
                 onEdit={startEditing} // Pass startEditing function
             />
+             {/* Moved ExportButton below ExpenseList */}
+            <div className="flex justify-end">
+                <ExportButton onExport={handleExport} disabled={expenses.length === 0} />
+            </div>
+             {/* Filter Controls at the bottom */}
             <FilterControls filter={filter} onFilterChange={setFilter} />
         </div>
       </div>
