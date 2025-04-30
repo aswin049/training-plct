@@ -27,6 +27,7 @@ export default function Home() {
     setFilter,
     exportExpenses,
     spendingByCategory,
+    isClient, // Use isClient to control rendering
   } = useExpenseTracker();
 
    const { toast } = useToast();
@@ -85,12 +86,13 @@ export default function Home() {
         <p className="text-muted-foreground">Simple and effective expense tracking.</p>
       </header>
 
-      {/* Summary Section */}
+      {/* Summary Section - Pass isClient prop */}
       <SummaryDisplay
         monthlySalary={monthlySalary}
         totalExpenses={totalExpenses}
         remainingBalance={remainingBalance}
         onSalaryUpdate={setMonthlySalary}
+        isClient={isClient} // Pass isClient down
       />
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -113,7 +115,7 @@ export default function Home() {
                 onDelete={handleDeleteExpense}
                 onEdit={startEditing} // Pass startEditing function
             />
-            {/* Export Button */}
+             {/* Export Button */}
             <div className="flex justify-end">
                 <ExportButton onExport={handleExport} disabled={expenses.length === 0} />
             </div>
@@ -123,9 +125,9 @@ export default function Home() {
       <FilterControls filter={filter} onFilterChange={setFilter} />
 
 
-      {/* <footer className="mt-12 text-center text-sm text-muted-foreground">
-        Built with Next.js and shadcn/ui.
-      </footer> */}
+      <footer className="mt-12 text-center text-sm text-muted-foreground">
+        Built by Aswindev S B with help of AI
+      </footer>
     </div>
   );
 }
