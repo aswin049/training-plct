@@ -105,17 +105,17 @@ export default function Home() {
            <SpendingChart data={spendingByCategory} />
         </div>
 
-        {/* Right Column: Filter and List */}
+        {/* Right Column: List, Export, and Filter */}
         <div className="lg:col-span-2 space-y-6">
-           <FilterControls filter={filter} onFilterChange={setFilter} />
             <div className="flex justify-end">
                 <ExportButton onExport={handleExport} disabled={expenses.length === 0} />
             </div>
-          <ExpenseList
-            expenses={expenses}
-            onDelete={handleDeleteExpense}
-            onEdit={startEditing} // Pass startEditing function
-          />
+            <ExpenseList
+                expenses={expenses}
+                onDelete={handleDeleteExpense}
+                onEdit={startEditing} // Pass startEditing function
+            />
+            <FilterControls filter={filter} onFilterChange={setFilter} />
         </div>
       </div>
 
