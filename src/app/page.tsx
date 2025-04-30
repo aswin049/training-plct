@@ -27,7 +27,6 @@ export default function Home() {
     setFilter,
     exportExpenses,
     spendingByCategory,
-    isClient, // Use isClient to control rendering
   } = useExpenseTracker();
 
    const { toast } = useToast();
@@ -80,24 +79,24 @@ export default function Home() {
 
 
   return (
-    <div className="container mx-auto p-4 md:p-8 space-y-6">
+    <div className="container mx-auto p-4 md:p-8 space-y-6 flex flex-col min-h-screen"> {/* Added flex flex-col min-h-screen */}
       <header className="text-center mb-8">
         <h1 className="text-3xl font-bold tracking-tight text-primary">DEV Financial Tracker</h1>
         <p className="text-muted-foreground">Simple and effective expense tracking.</p>
       </header>
 
-      {/* Summary Section - Pass isClient prop */}
+      {/* Summary Section */}
       <SummaryDisplay
         monthlySalary={monthlySalary}
         totalExpenses={totalExpenses}
         remainingBalance={remainingBalance}
         onSalaryUpdate={setMonthlySalary}
-        isClient={isClient} // Pass isClient down
       />
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      {/* Main Content Grid - Added flex-grow */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 flex-grow">
         {/* Left Column: Form and Chart */}
-        <div className="lg:col-span-1 space-y-6">
+        <div className="lg:col-span-1 space-y-6 flex flex-col"> {/* Added flex flex-col */}
           <ExpenseForm
             onSubmit={handleAddExpense}
             onUpdate={handleUpdateExpense}
@@ -107,20 +106,23 @@ export default function Home() {
            <SpendingChart data={spendingByCategory} />
         </div>
 
-        {/* Right Column: List, Export, and Filter */}
-        <div className="lg:col-span-2 space-y-6">
+        {/* Right Column: List and Export */}
+        <div className="lg:col-span-2 space-y-6 flex flex-col"> {/* Added flex flex-col */}
             {/* Expense History */}
-            <ExpenseList
-                expenses={expenses}
-                onDelete={handleDeleteExpense}
-                onEdit={startEditing} // Pass startEditing function
-            />
+            <div className="flex-grow"> {/* Added flex-grow wrapper */}
+                <ExpenseList
+                    expenses={expenses}
+                    onDelete={handleDeleteExpense}
+                    onEdit={startEditing} // Pass startEditing function
+                />
+            </div>
              {/* Export Button */}
             <div className="flex justify-end">
                 <ExportButton onExport={handleExport} disabled={expenses.length === 0} />
             </div>
         </div>
       </div>
+
        {/* Filter Controls below the main grid */}
       <FilterControls filter={filter} onFilterChange={setFilter} />
 

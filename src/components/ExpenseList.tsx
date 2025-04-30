@@ -1,6 +1,6 @@
 import React from 'react';
 import { format, parseISO } from 'date-fns';
-import { Edit, Trash2, XCircle } from 'lucide-react';
+import { Edit, Trash2 } from 'lucide-react'; // Removed XCircle as it's unused
 import {
   Table,
   TableBody,
@@ -29,12 +29,13 @@ export function ExpenseList({ expenses, onDelete, onEdit }: ExpenseListProps) {
   };
 
   return (
-    <Card className="shadow-md">
+    <Card className="shadow-md flex flex-col h-full"> {/* Added flex flex-col h-full */}
          <CardHeader>
             <CardTitle>Expense History</CardTitle>
         </CardHeader>
-        <CardContent>
-            <ScrollArea className="h-[400px] w-full rounded-md border">
+        <CardContent className="flex-grow"> {/* Added flex-grow */}
+            {/* Removed fixed height h-[400px] */}
+            <ScrollArea className="w-full rounded-md border flex-grow">
             <Table>
                 <TableHeader className="sticky top-0 bg-secondary">
                 <TableRow>

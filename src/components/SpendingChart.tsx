@@ -1,6 +1,6 @@
 import React from 'react';
 import { TrendingUp } from "lucide-react"
-import { Pie, PieChart, Sector } from "recharts"
+import { Pie, PieChart } from "recharts" // Removed Sector as it's unused
 import {
   Card,
   CardContent,
@@ -48,7 +48,7 @@ export function SpendingChart({ data }: SpendingChartProps) {
 
   if (data.length === 0) {
     return (
-       <Card className="flex flex-col shadow-md">
+       <Card className="flex flex-col shadow-md h-full"> {/* Added h-full */}
             <CardHeader className="items-center pb-0">
                 <CardTitle>Spending Breakdown</CardTitle>
                 <CardDescription>Distribution of expenses by category</CardDescription>
@@ -66,15 +66,16 @@ export function SpendingChart({ data }: SpendingChartProps) {
   }
 
   return (
-    <Card className="flex flex-col shadow-md">
+    <Card className="flex flex-col shadow-md h-full"> {/* Added h-full */}
       <CardHeader className="items-center pb-0">
         <CardTitle>Spending Breakdown</CardTitle>
         <CardDescription>Distribution of expenses by category</CardDescription>
       </CardHeader>
-      <CardContent className="flex-1 pb-0">
+      <CardContent className="flex-1 pb-0 flex items-center justify-center"> {/* Added flex items-center justify-center */}
         <ChartContainer
           config={chartConfig}
-          className="mx-auto aspect-square max-h-[300px]" // Adjusted max height
+          // Removed max-h-[300px], adjusted aspect ratio and width/height control
+          className="mx-auto aspect-square h-full max-h-[350px] w-full max-w-[350px]"
         >
           <PieChart>
              <ChartTooltip
@@ -86,6 +87,7 @@ export function SpendingChart({ data }: SpendingChartProps) {
               dataKey="amount"
               nameKey="category" // Key for category name in data
               innerRadius={60}
+              outerRadius={100} // Adjust outer radius if needed
               strokeWidth={5}
             >
             </Pie>
